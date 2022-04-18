@@ -13,6 +13,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using TheBugTracker.Data;
 using TheBugTracker.Models;
+using TheBugTracker.Services;
+using TheBugTracker.Services.Interfaces;
 
 namespace TheBugTracker
 {
@@ -38,9 +40,16 @@ namespace TheBugTracker
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultUI()
                 .AddDefaultTokenProviders();
+            
+            // ROLES SERVICE
+            services.AddScoped<IBTRolesService, BTRolesService>();
 
+            // COMPANY INFO SERVICE
+            services.AddScoped<IBTCompanyInfoService, BTCompanyInfoService>();
 
             services.AddControllersWithViews();
+
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

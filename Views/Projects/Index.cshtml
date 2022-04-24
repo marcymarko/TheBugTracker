@@ -1,4 +1,6 @@
-﻿@model IEnumerable<TheBugTracker.Models.Project>
+﻿@using  TheBugTracker.Services.Interfaces
+@inject IBTFileService fileService
+@model IEnumerable<TheBugTracker.Models.Project>
 
 @{
     ViewData["Title"] = "Index";
@@ -68,6 +70,7 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.ImageFileData)
+                @*<img class="img-fluid" style="width:100px;" src="@fileService.?ConvertByteArrayToFile(item.ImageFileData, item.ImageContentType)">*@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.ImageContentType)

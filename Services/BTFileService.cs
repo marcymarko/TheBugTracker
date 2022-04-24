@@ -17,7 +17,7 @@ namespace TheBugTracker.Services
                 string imageBase64Data = Convert.ToBase64String(fileData);
                 return string.Format($"data:{extension};base64,{imageBase64Data}");
             }
-            catch (System.Exception)
+            catch (Exception)
             {
 
                 throw;

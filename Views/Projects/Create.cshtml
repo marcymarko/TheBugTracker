@@ -1,4 +1,4 @@
-﻿
+﻿@using TheBugTracker.Models.Enums
 @model TheBugTracker.Models.ViewModels.AddProjectWithPMViewModel
 
 @{
@@ -36,7 +36,11 @@
             </div>
             <div class="form-group">
                 <label class="control-label">Choose a priority</label>
-                <select asp-for="ProjectPriority" class ="form-control" asp-items="@Model.PriorityList"></select>
+                <select asp-for="Project.ProjectPriorityId" class ="form-control" asp-items="@Model.PriorityList">
+                    <option>
+
+                    </option>
+                </select>
             </div>
             
            @*  Set up Image *@
@@ -57,12 +61,15 @@
             }
 
             @* Fix up PM SelectList *@
-            <div class="form-group">
+             @if(User.IsInRole(Roles.Admin.ToString()))
+            {
+                <div class="form-group">
                 <label class="control-label"> Project Manager </label>
                 <select asp-for="PmId" class ="form-control" asp-items="@Model.PMList">
                     <option></option>
                 </select>
-            </div>
+                </div>
+            }
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

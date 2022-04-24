@@ -73,6 +73,9 @@ namespace TheBugTracker
             // FILE SERVICe
             services.AddScoped<IBTFileService, BTFileService>();
 
+            // LOOKUP SERVICE
+            services.AddScoped<IBTLookupService, BTLookupService>();
+
             services.AddControllersWithViews();
 
             

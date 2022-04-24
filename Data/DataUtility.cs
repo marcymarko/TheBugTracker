@@ -227,10 +227,10 @@ namespace TheBugTracker.Data
             //Seed Default Admin User
             var defaultUser = new BTUser
             {
-                UserName = "btadmin1@bugtracker.com",
-                Email = "btadmin1@bugtracker.com",
-                FirstName = "Bill",
-                LastName = "Appuser",
+                UserName = "fil.zilkovskyi@gmail.com",
+                Email = "fil.zilkovskyi@gmail.com",
+                FirstName = "Fil",
+                LastName = "Zilkovski",
                 EmailConfirmed = true,
                 CompanyId = company1Id
             };

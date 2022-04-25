@@ -69,8 +69,10 @@
                 @Html.DisplayFor(modelItem => item.ImageFileName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ImageFileData)
-                @*<img class="img-fluid" style="width:100px;" src="@fileService.?ConvertByteArrayToFile(item.ImageFileData, item.ImageContentType)">*@
+                    @if(item.ImageFileData != null)
+                    {
+                        <img class="img-fluid" style="width:100px;" src="data:image/*;base64,@(Convert.ToBase64String(item.ImageFileData))">
+                    }
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.ImageContentType)
@@ -84,8 +86,16 @@
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
+                
+                    @if(item.Archived)
+                    {
+                        <a asp-action="Restore" asp-route-id="@item.Id">Restore</a>
+                    }
+                    else
+                    {
+                        <a asp-action="Archive" asp-route-id="@item.Id">Archive</a>
+                    }
+                </td>
         </tr>
 }
     </tbody>

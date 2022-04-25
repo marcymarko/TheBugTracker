@@ -14,6 +14,8 @@ namespace TheBugTracker.Services.Interfaces
 
         public Task ArchiveProjectAsync(Project project);
 
+        public Task RestoreProjectAsync(Project project);
+
         public Task<List<Project>> GetAllProjectsByCompany(int companyId); 
 
         public Task<List<Project>> GetAllProjectsByPriority(int companyId, string PriorityName);

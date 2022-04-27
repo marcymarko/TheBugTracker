@@ -36,7 +36,7 @@ namespace TheBugTracker.Models
         public string AvatarContentType { get; set; }
 
 
-        public int? CompanyId { get; set; }  // nullable, FK
+        public int CompanyId { get; set; }  // nullable, FK
 
 
         // Navigational properties

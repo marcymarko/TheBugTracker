@@ -1,20 +1,19 @@
 ﻿@using  TheBugTracker.Services.Interfaces
 @inject IBTFileService fileService
+@inject UserManager<BTUser> UserManager
+@inject IBTProjectService ProjectService
 @model IEnumerable<TheBugTracker.Models.Project>
 @using TheBugTracker.Models.Enums
+@using Microsoft.AspNetCore.Identity
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Archived Projects";
+    BTUser btUser = await UserManager.GetUserAsync(User);
 }
 
-<h1>Index</h1>
+<h1>Archived Projects</h1>
 
-@if(User.IsInRole(nameof(Roles.Admin)) || User.IsInRole(nameof(Roles.ProjectManager)))
-{
-    <p>
-    <a asp-action="Create">Create New</a>
-    </p>
-}
+
 <table class="table">
     <thead>
         <tr>
@@ -88,16 +87,18 @@
                 @Html.DisplayFor(modelItem => item.ProjectPriority.Id)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                 
-                    @if(item.Archived)
-                    {
-                        <a asp-action="Restore" asp-route-id="@item.Id">Restore</a>
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    
+                    @{
+                        bool isProjectPM = (await ProjectService.GetProjectManagerAsync(item.Id))?.Id == btUser.Id;
                     }
-                    else
+
+                    @if (User.IsInRole(nameof(Roles.Admin)) || isProjectPM)
                     {
-                        <a asp-action="Archive" asp-route-id="@item.Id">Archive</a>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> 
+
+                        <a asp-action="Restore" asp-route-id="@item.Id">Restore</a> 
                     }
                 </td>
         </tr>

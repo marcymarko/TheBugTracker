@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -18,20 +19,23 @@ namespace TheBugTracker.Controllers
     public class ProjectsController : Controller
     {
         private readonly ApplicationDbContext _context;
-
+        private readonly IBTCompanyInfoService _companyService;
         private readonly IBTLookupService _lookUpService;
         private readonly IBTRolesService _roleService;
         private readonly IBTFileService _fileService;
         private readonly IBTProjectService _projectService;
+        private readonly UserManager<BTUser> _userManager;
 
 
-        public ProjectsController(ApplicationDbContext context, IBTFileService fileService, IBTProjectService projectService, IBTRolesService roleService, IBTLookupService lookupService)
+        public ProjectsController(ApplicationDbContext context, IBTFileService fileService, IBTProjectService projectService, IBTRolesService roleService, IBTLookupService lookupService, UserManager<BTUser> userManager, IBTCompanyInfoService companyService)
         {
             _context = context;
             _fileService = fileService;
             _projectService = projectService;
             _roleService = roleService;
             _lookUpService = lookupService;
+            _userManager = userManager;
+            _companyService = companyService;
         }
 
         // GET: Projects
@@ -39,6 +43,42 @@ namespace TheBugTracker.Controllers
         {
             var applicationDbContext = _context.Projects.Include(p => p.Company).Include(p => p.ProjectPriority);
             return View(await applicationDbContext.ToListAsync());
+        }
+
+        public async Task<IActionResult> MyProjects()
+        {
+            string userId = _userManager.GetUserId(User);
+
+            List<Project> projects = await _projectService.GetUserProjectsAsync(userId);
+
+            return View(projects);
+        }
+
+        public async Task<IActionResult> ArchivedProjects()
+        {
+            int companyId = User.Identity.GetCompanyId().Value;
+
+            List<Project> projects = await _projectService.GetArchivedProjectsByCompanyAsync(companyId);
+
+            return View(projects);
+        }
+
+        public async Task<IActionResult> AllProjects()
+        {
+            List<Project> projects = new();
+
+            int companyId = User.Identity.GetCompanyId().Value;
+
+            if(User.IsInRole(nameof(Roles.Admin)) || User.IsInRole(nameof(Roles.ProjectManager)))
+            {
+                projects = await _companyService.GetAllProjectsAsync(companyId);
+            }
+            else
+            {
+                projects = await _projectService.GetAllProjectsByCompany(companyId);
+            }
+
+            return View(projects);
         }
 
         // GET: Projects/Details/5
@@ -49,10 +89,10 @@ namespace TheBugTracker.Controllers
                 return NotFound();
             }
 
-            var project = await _context.Projects
-                .Include(p => p.Company)
-                .Include(p => p.ProjectPriority)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            int companyId = User.Identity.GetCompanyId().Value;
+
+            Project project = await _projectService.GetProjectByIdAsync(id.Value, companyId);
+
             if (project == null)
             {
                 return NotFound();
@@ -106,6 +146,8 @@ namespace TheBugTracker.Controllers
                     if (!string.IsNullOrEmpty(model.PmId))
                     {
                         await _projectService.AddProjectManagerAsync(model.PmId, model.Project.Id);
+                        //BTUser newPM = await _context.Users.FirstOrDefaultAsync(u => u.Id == model.PmId);
+                        //model.Project.Members.Add(newPM);
                     }
 
                 }

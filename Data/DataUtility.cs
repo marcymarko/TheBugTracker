@@ -514,8 +514,8 @@ namespace TheBugTracker.Data
             //Seed Default Submitter1 User
             defaultUser = new BTUser
             {
-                UserName = "Submitter1@bugtracker.com",
-                Email = "Submitter1@bugtracker.com",
+                UserName = "mark.zilkovskyi@gmail.com",
+                Email = "mark.zilkovskyi@gmail.com",
                 FirstName = "Scott",
                 LastName = "Appuser",
                 EmailConfirmed = true,
@@ -526,7 +526,7 @@ namespace TheBugTracker.Data
                 var user = await userManager.FindByEmailAsync(defaultUser.Email);
                 if (user == null)
                 {
-                    await userManager.CreateAsync(defaultUser, "Abc&123!");
+                    await userManager.CreateAsync(defaultUser, "Dina1966.");
                     await userManager.AddToRoleAsync(defaultUser, Roles.Submitter.ToString());
                 }
             }

@@ -88,6 +88,47 @@ namespace TheBugTracker.Services
 
 
 
+        public async Task<TicketAttachment> GetTicketAttachmentByIdAsync(int ticketAttachmentId)
+        {
+            try
+            {
+                TicketAttachment ticketAttachment = await _context.TicketAttachments
+                                                                  .Include(t => t.User)
+                                                                  .FirstOrDefaultAsync(t => t.Id == ticketAttachmentId);
+                return ticketAttachment;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        public async Task AddTicketAttachmentAsync(TicketAttachment ticketAttachment)
+        {
+            try
+            {
+                await _context.AddAsync(ticketAttachment);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        public async Task AddTicketCommentAsync(TicketComment ticketComment)
+        {
+            try
+            {
+                await _context.AddAsync(ticketComment);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
         public async Task<List<Ticket>> GetAllTicketsByPriorityAsync(int companyId, string priorityName)
         {
             int priorityId = (await LookupTicketPriorityIdAsync(priorityName)).Value;
@@ -156,8 +197,7 @@ namespace TheBugTracker.Services
                                                      .Where(p => p.CompanyId == companyId)
                                                      .SelectMany(p => p.Tickets)
                                                      .Include(t => t.Attachments)
-                                                     .Include(t => t.Comments)
-                                                     .Include(t => t.Description)
+                                                     .Include(t => t.Comments)         
                                                      .Include(t => t.DeveloperUser)
                                                      .Include(t => t.History)
                                                      .Include(t => t.OwnerUser)
@@ -288,7 +328,17 @@ namespace TheBugTracker.Services
         {
             try
             {
-                Ticket ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.Id == ticketId);
+                Ticket ticket = await _context.Tickets
+                                              .Include(t => t.DeveloperUser)
+                                              .Include(t => t.OwnerUser)
+                                              .Include(t => t.Project)
+                                              .Include(t => t.TicketPriority)
+                                              .Include(t => t.TicketStatus)
+                                              .Include(t => t.TicketType)
+                                              .Include(t => t.Comments)
+                                              .Include(t => t.Attachments)
+                                              .Include(t => t.History)
+                                              .FirstOrDefaultAsync(t => t.Id == ticketId);
                 return ticket;
             }
             catch (Exception)

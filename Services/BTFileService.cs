@@ -45,14 +45,23 @@ namespace TheBugTracker.Services
 
         public string FormatFileSize(long bytes)
         {
+            //int counter = 0;
+            //decimal fileSize = bytes;
+            //while (Math.Round(fileSize / 1024) >= 1)
+            //{
+            //    fileSize /= bytes;
+            //    counter++;
+            //}
+            //return String.Format("{0:n1}{1}",fileSize, suffixes[counter]);
+
             int counter = 0;
-            decimal fileSize = bytes;
-            while (Math.Round(fileSize / 1024) >= 1)
+            decimal number = bytes;
+            while (Math.Round(number / 1024) >= 1)
             {
-                fileSize /= bytes;
+                number /= 1024;
                 counter++;
             }
-            return String.Format("{0:n1}{1}",fileSize, suffixes[counter]);
+            return string.Format("{0:n1}{1}", number, suffixes[counter]);
         }
 
         public string GetFileIcon(string file)
@@ -62,9 +71,12 @@ namespace TheBugTracker.Services
             if (!string.IsNullOrWhiteSpace(file))
             {
                 fileImage = Path.GetExtension(file).Replace(".", "");
-                return $"/img/png/{fileImage}.png";
+                return $"/img/contenttype/png/{fileImage}.png";
             }
             return fileImage;
+
+            //string ext = Path.GetExtension(file).Replace(".", "");
+            //return $"/img/contenttype/{ext}.png";
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -11,6 +12,7 @@ using TheBugTracker.Data;
 using TheBugTracker.Extensions;
 using TheBugTracker.Models;
 using TheBugTracker.Models.Enums;
+using TheBugTracker.Models.ViewModels;
 using TheBugTracker.Services.Interfaces;
 
 namespace TheBugTracker.Controllers
@@ -23,8 +25,9 @@ namespace TheBugTracker.Controllers
         private readonly IBTLookupService _lookupService;
         private readonly IBTTicketService _ticketService;
         private readonly IBTFileService _fileService;
+        private readonly IBTTicketHistoryService _ticketHistoryService;
 
-        public TicketsController(ApplicationDbContext context, UserManager<BTUser> userManager, IBTProjectService projectService, IBTLookupService lookupService, IBTTicketService ticketService, IBTFileService fileService)
+        public TicketsController(ApplicationDbContext context, UserManager<BTUser> userManager, IBTProjectService projectService, IBTLookupService lookupService, IBTTicketService ticketService, IBTFileService fileService, IBTTicketHistoryService ticketHistoryService)
         {
             _context = context;
             _userManager = userManager;
@@ -32,6 +35,7 @@ namespace TheBugTracker.Controllers
             _lookupService = lookupService;
             _ticketService = ticketService;
             _fileService = fileService;
+            _ticketHistoryService = ticketHistoryService;
         }
 
         // GET: Tickets
@@ -74,6 +78,63 @@ namespace TheBugTracker.Controllers
 
             return View(tickets);
         }
+
+        [Authorize(Roles="Admin, ProjectManager")]
+        public async Task<IActionResult> UnAssignedTickets()
+        {
+            int companyId = User.Identity.GetCompanyId().Value;
+
+            string btUserId = _userManager.GetUserId(User);
+
+            List<Ticket> tickets = await _ticketService.GetUnAssignedTicketsAsync(companyId);
+
+            if (User.IsInRole(nameof(Roles.Admin)))
+            {
+                return View(tickets);
+            }
+            else
+            {
+                List<Ticket> pmTickets = new();
+
+                foreach(Ticket ticket in tickets)
+                {
+                    if(await _projectService.IsAssignedProjectManagerasync(btUserId, ticket.ProjectId))
+                    {
+                        pmTickets.Add(ticket);
+                    }
+
+                }
+                return View(pmTickets);
+            }
+            
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> AssignDeveloper(int id)
+        {
+            AssignDeveloperViewModel model = new();
+
+            model.Ticket = await _ticketService.GetTicketByIdAsync(id);
+            model.Developers = new SelectList(await _projectService.GetProjectMembersByRoleAsync(model.Ticket.ProjectId, nameof(Roles.Developer)),
+                                              "Id", "FullName");
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AssignDeveloper(AssignDeveloperViewModel model)
+        {
+            if(model.DeveloperId != null)
+            {
+                await _ticketService.AssignTicketAsync(model.Ticket.Id, model.DeveloperId);
+                return RedirectToAction(nameof(Details), new { id = model.Ticket.Id });
+            }
+            
+            return RedirectToAction(nameof(AssignDeveloper), new { id = model.Ticket.Id });
+            
+        }
+
 
         // GET: Tickets/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -258,6 +319,7 @@ namespace TheBugTracker.Controllers
             if (ModelState.IsValid)
             {
                 BTUser btUser = await _userManager.GetUserAsync(User);
+                Ticket oldTicket = await _ticketService.GetTicketsAsNoTrackingAsync(ticket.Id);
 
                 try
                 {
@@ -276,6 +338,8 @@ namespace TheBugTracker.Controllers
                     }
                 }
                 // TODo: Add ticket history
+                Ticket newTicket = await _ticketService.GetTicketsAsNoTrackingAsync(ticket.Id);
+                await _ticketHistoryService.AddHistoryAsync(oldTicket, newTicket, btUser.Id);
                 return RedirectToAction(nameof(Index));
             }
             ViewData["TicketPriorityId"] = new SelectList(await _lookupService.GetTicketPriorityAsync(), "Id", "Name", ticket.TicketPriorityId);

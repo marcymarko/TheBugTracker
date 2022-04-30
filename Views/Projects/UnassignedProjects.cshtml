@@ -1,0 +1,85 @@
+﻿@using  TheBugTracker.Services.Interfaces
+@inject IBTFileService fileService
+@model IEnumerable<TheBugTracker.Models.Project>
+@using TheBugTracker.Models.Enums
+
+@{
+    ViewData["Title"] = "Unassigned Projects";
+}
+
+<h1>Unassigned Projects</h1>
+
+@if(User.IsInRole(nameof(Roles.Admin)) || User.IsInRole(nameof(Roles.ProjectManager)))
+{
+    <p>
+    <a asp-action="Create">Create New</a>
+    </p>
+}
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StartDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EndDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Archived)
+            </th>
+            
+            <th>
+                @Html.DisplayNameFor(model => model.ImageFileData)
+            </th>
+           
+            
+            <th>
+                @Html.DisplayNameFor(model => model.ProjectPriority)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StartDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EndDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Archived)
+            </td>
+            
+            <td>
+                    @if(item.ImageFileData != null)
+                    {
+                        <img class="img-fluid" style="width:100px;" src="data:image/*;base64,@(Convert.ToBase64String(item.ImageFileData))">
+                    }
+            </td>
+            
+            
+            <td>
+                @Html.DisplayFor(modelItem => item.ProjectPriority.Name)
+            </td>
+            <td>
+                <a class="btn btn-sm btn-outline-secondary" asp-action="AssignPM" asp-route-projectId="@item.Id">Add PM</a>
+
+                </td>
+        </tr>
+}
+    </tbody>
+</table>

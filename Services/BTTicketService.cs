@@ -188,6 +188,25 @@ namespace TheBugTracker.Services
                 throw;
             }
         }
+        public async Task<Ticket> GetTicketsAsNoTrackingAsync(int ticketId)
+        {
+            try
+            {
+                return await _context.Tickets
+                                              .Include(t => t.DeveloperUser)
+                                              .Include(t => t.Project)
+                                              .Include(t => t.TicketPriority)
+                                              .Include(t => t.TicketStatus)
+                                              .Include(t => t.TicketType)
+                                              .AsNoTracking()
+                                              .FirstOrDefaultAsync(t => t.Id == ticketId);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
 
         public async Task<List<Ticket>> GetAllTicketsByCompanyAsync(int companyId)
         {
@@ -233,6 +252,23 @@ namespace TheBugTracker.Services
                                                          .Include(t => t.Project)
                                                      .Where(t => t.TicketTypeId == typeId)
                                                      .ToListAsync();
+
+                return tickets;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+        public async Task<List<Ticket>> GetUnAssignedTicketsAsync(int companyId)
+        {
+            List<Ticket> tickets = new();
+
+
+            try
+            {
+                tickets = (await GetAllTicketsByCompanyAsync(companyId)).Where(t => string.IsNullOrEmpty(t.DeveloperUserId)).ToList();
 
                 return tickets;
             }

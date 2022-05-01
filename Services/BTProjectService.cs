@@ -181,6 +181,7 @@ namespace TheBugTracker.Services
             return projects;
         }
 
+
         public async Task<List<Project>> GetUnassignedProjectAsync(int companyId)
         {
             List<Project> result = new();
@@ -212,6 +213,7 @@ namespace TheBugTracker.Services
         public async Task<List<Project>> GetAllProjectsByPriority(int companyId, string PriorityName)
         {
             List<Project> projects = await GetAllProjectsByCompany(companyId);
+
             int priorityId = await LookUpProjectPriorityId(PriorityName);
 
             return projects.Where(p => p.ProjectPriorityId == priorityId).ToList();

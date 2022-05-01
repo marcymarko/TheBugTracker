@@ -112,7 +112,7 @@ namespace TheBugTracker.Services
                 }
 
                 // Check ticket type
-                if (oldTicket.TicketStatusId != newTicket.TicketStatusId)
+                if (oldTicket.TicketTypeId != newTicket.TicketTypeId)
                 {
                     TicketHistory history = new()
                     {
@@ -128,7 +128,7 @@ namespace TheBugTracker.Services
                 }
 
                 // Check ticket developer
-                if (oldTicket.TicketStatusId != newTicket.TicketStatusId)
+                if (oldTicket.DeveloperUserId != newTicket.DeveloperUserId)
                 {
                     TicketHistory history = new()
                     {
@@ -161,7 +161,7 @@ namespace TheBugTracker.Services
             try
             {
                 Ticket ticket = await _context.Tickets.FindAsync(ticketId);
-                string description = model.ToLower().Replace("Ticket", "");
+                string description = model.ToLower().Replace("ticket", "");
                 description = $"New {description} added to ticket: {ticket.Title}";
 
                 TicketHistory history = new()

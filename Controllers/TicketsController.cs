@@ -383,7 +383,7 @@ namespace TheBugTracker.Controllers
                 // TODo: Add ticket history
                 Ticket newTicket = await _ticketService.GetTicketsAsNoTrackingAsync(ticket.Id);
                 await _ticketHistoryService.AddHistoryAsync(oldTicket, newTicket, btUser.Id);
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(AllTickets));
             }
             ViewData["TicketPriorityId"] = new SelectList(await _lookupService.GetTicketPriorityAsync(), "Id", "Name", ticket.TicketPriorityId);
             ViewData["TicketStatusId"] = new SelectList(await _lookupService.GetTicketStatusAsync(), "Id", "Name", ticket.TicketStatusId);
@@ -433,7 +433,7 @@ namespace TheBugTracker.Controllers
 
 
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(AllTickets));
         }
 
         [Authorize(Roles = "Admin, ProjectManager")]
@@ -468,7 +468,7 @@ namespace TheBugTracker.Controllers
 
 
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(AllTickets));
         }
 
         private async Task<bool> TicketExists(int id)

@@ -397,4 +397,5 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
-appsettings.json
+Data\DataUtility.cs
+ScaffoldingReadMe.txt

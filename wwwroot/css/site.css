@@ -18,6 +18,13 @@ a {
   border-color: #1861ac;
 }
 
+.btn-dark {
+    color: #1d3d89;
+    width: 50px;
+    height: 60px;
+    border-radius: 16px;
+}
+
 .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
   color: #fff;
   background-color: #1b6ec2;

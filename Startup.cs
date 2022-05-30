@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TheBlogProject.Services;
 using TheBugTracker.Data;
 using TheBugTracker.Models;
 using TheBugTracker.Services;
@@ -81,6 +82,10 @@ namespace TheBugTracker
 
             // LOOKUP SERVICE
             services.AddScoped<IBTLookupService, BTLookupService>();
+
+            // EMAIL SERVICE
+            services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
+            services.AddScoped<IBlogEmailSender, EmailService>();
 
             services.AddControllersWithViews();
 

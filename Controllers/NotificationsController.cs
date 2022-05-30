@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -17,12 +18,13 @@ namespace TheBugTracker.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IBlogEmailSender _emailSender;
 
-        public NotificationsController(ApplicationDbContext context)
+        public NotificationsController(ApplicationDbContext context, IBlogEmailSender emailSender)
         {
             _context = context;
+            _emailSender = emailSender;
         }
 
-        public IActionResult Contact()
+        public IActionResult ContactMe()
         {
             return View();
         }
@@ -35,6 +37,12 @@ namespace TheBugTracker.Controllers
             model.Message = $"{model.Message} <hr/> Phone: {model.Phone}";
             await _emailSender.SendContactEmailAsync(model.Email, model.Name, model.Subject, model.Message);
             return RedirectToAction("Index");
+        }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
 

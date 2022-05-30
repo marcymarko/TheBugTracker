@@ -7,17 +7,36 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using TheBugTracker.Data;
 using TheBugTracker.Models;
+using TheBugTracker.Models.ViewModels;
+using TheBugTracker.Services;
 
 namespace TheBugTracker.Controllers
 {
     public class NotificationsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IBlogEmailSender _emailSender;
 
         public NotificationsController(ApplicationDbContext context)
         {
             _context = context;
         }
+
+        public IActionResult Contact()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Contact(ContactMe model)
+        {
+            //This is where I will be emailing
+            model.Message = $"{model.Message} <hr/> Phone: {model.Phone}";
+            await _emailSender.SendContactEmailAsync(model.Email, model.Name, model.Subject, model.Message);
+            return RedirectToAction("Index");
+        }
+
 
         // GET: Notifications
         public async Task<IActionResult> Index()

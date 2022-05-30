@@ -36,7 +36,7 @@ namespace TheBugTracker.Controllers
             //This is where I will be emailing
             model.Message = $"{model.Message} <hr/> Phone: {model.Phone}";
             await _emailSender.SendContactEmailAsync(model.Email, model.Name, model.Subject, model.Message);
-            return RedirectToAction("Index");
+            return RedirectToAction("Dashboard", "Home");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

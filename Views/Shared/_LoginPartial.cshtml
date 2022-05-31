@@ -5,6 +5,7 @@
     BTUser btUser = await UserManager.GetUserAsync(User);
 }
 
+
 <div class="dropdown py-sm-4 ms-auto ms-sm-0 flex-shrink-1">
 
     @if (SignInManager.IsSignedIn(User))
@@ -37,5 +38,6 @@
         </ul>
     }
 </div>
+
 <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
 </form>

@@ -399,3 +399,5 @@ FodyWeavers.xsd
 
 Data/DataUtility.cs/*
 
+appsettings.json
+
